@@ -7,8 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		D7B18E59174D8453003E149A /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D7B18E58174D8453003E149A /* main.cpp */; };
-		D7B18E5B174D8453003E149A /* robotKin.1 in CopyFiles */ = {isa = PBXBuildFile; fileRef = D7B18E5A174D8453003E149A /* robotKin.1 */; };
+		D7B18E67174D85BA003E149A /* robotTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D7B18E66174D85BA003E149A /* robotTest.cpp */; };
+		D7B18E6C174D85CB003E149A /* Frame.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D7B18E68174D85CB003E149A /* Frame.cpp */; };
+		D7B18E6D174D85CB003E149A /* Hubo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D7B18E69174D85CB003E149A /* Hubo.cpp */; };
+		D7B18E6E174D85CB003E149A /* Linkage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D7B18E6A174D85CB003E149A /* Linkage.cpp */; };
+		D7B18E6F174D85CB003E149A /* Robot.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D7B18E6B174D85CB003E149A /* Robot.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -18,7 +21,6 @@
 			dstPath = /usr/share/man/man1/;
 			dstSubfolderSpec = 0;
 			files = (
-				D7B18E5B174D8453003E149A /* robotKin.1 in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 1;
 		};
@@ -26,8 +28,15 @@
 
 /* Begin PBXFileReference section */
 		D7B18E55174D8453003E149A /* robotKin */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = robotKin; sourceTree = BUILT_PRODUCTS_DIR; };
-		D7B18E58174D8453003E149A /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
-		D7B18E5A174D8453003E149A /* robotKin.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; path = robotKin.1; sourceTree = "<group>"; };
+		D7B18E66174D85BA003E149A /* robotTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = robotTest.cpp; path = test/robotTest.cpp; sourceTree = "<group>"; };
+		D7B18E68174D85CB003E149A /* Frame.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Frame.cpp; path = src/Frame.cpp; sourceTree = "<group>"; };
+		D7B18E69174D85CB003E149A /* Hubo.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Hubo.cpp; path = src/Hubo.cpp; sourceTree = "<group>"; };
+		D7B18E6A174D85CB003E149A /* Linkage.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Linkage.cpp; path = src/Linkage.cpp; sourceTree = "<group>"; };
+		D7B18E6B174D85CB003E149A /* Robot.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Robot.cpp; path = src/Robot.cpp; sourceTree = "<group>"; };
+		D7B18E70174D85E0003E149A /* Frame.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Frame.h; path = include/Frame.h; sourceTree = "<group>"; };
+		D7B18E71174D85E0003E149A /* Hubo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Hubo.h; path = include/Hubo.h; sourceTree = "<group>"; };
+		D7B18E72174D85E0003E149A /* Linkage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Linkage.h; path = include/Linkage.h; sourceTree = "<group>"; };
+		D7B18E73174D85E0003E149A /* Robot.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Robot.h; path = include/Robot.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -44,7 +53,15 @@
 		D7B18E4C174D8453003E149A = {
 			isa = PBXGroup;
 			children = (
-				D7B18E57174D8453003E149A /* robotKin */,
+				D7B18E66174D85BA003E149A /* robotTest.cpp */,
+				D7B18E70174D85E0003E149A /* Frame.h */,
+				D7B18E68174D85CB003E149A /* Frame.cpp */,
+				D7B18E72174D85E0003E149A /* Linkage.h */,
+				D7B18E6A174D85CB003E149A /* Linkage.cpp */,
+				D7B18E73174D85E0003E149A /* Robot.h */,
+				D7B18E6B174D85CB003E149A /* Robot.cpp */,
+				D7B18E71174D85E0003E149A /* Hubo.h */,
+				D7B18E69174D85CB003E149A /* Hubo.cpp */,
 				D7B18E56174D8453003E149A /* Products */,
 			);
 			sourceTree = "<group>";
@@ -55,15 +72,6 @@
 				D7B18E55174D8453003E149A /* robotKin */,
 			);
 			name = Products;
-			sourceTree = "<group>";
-		};
-		D7B18E57174D8453003E149A /* robotKin */ = {
-			isa = PBXGroup;
-			children = (
-				D7B18E58174D8453003E149A /* main.cpp */,
-				D7B18E5A174D8453003E149A /* robotKin.1 */,
-			);
-			path = robotKin;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -117,7 +125,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D7B18E59174D8453003E149A /* main.cpp in Sources */,
+				D7B18E67174D85BA003E149A /* robotTest.cpp in Sources */,
+				D7B18E6C174D85CB003E149A /* Frame.cpp in Sources */,
+				D7B18E6D174D85CB003E149A /* Hubo.cpp in Sources */,
+				D7B18E6E174D85CB003E149A /* Linkage.cpp in Sources */,
+				D7B18E6F174D85CB003E149A /* Robot.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -127,7 +139,7 @@
 		D7B18E5C174D8453003E149A /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
+				ALWAYS_SEARCH_USER_PATHS = YES;
 				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
@@ -153,13 +165,14 @@
 				MACOSX_DEPLOYMENT_TARGET = 10.8;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = macosx;
+				USER_HEADER_SEARCH_PATHS = /usr/local/include;
 			};
 			name = Debug;
 		};
 		D7B18E5D174D8453003E149A /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
+				ALWAYS_SEARCH_USER_PATHS = YES;
 				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
@@ -178,6 +191,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				MACOSX_DEPLOYMENT_TARGET = 10.8;
 				SDKROOT = macosx;
+				USER_HEADER_SEARCH_PATHS = /usr/local/include;
 			};
 			name = Release;
 		};
