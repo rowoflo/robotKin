@@ -1,0 +1,2 @@
+# Xcode project folder is treaded as a binary
+*.pbxproj -crlf -diff -merge
