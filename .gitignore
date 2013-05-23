@@ -1,3 +1,11 @@
+#output directories to ignore
+bin/
+lib/
+build/
+dox/
+*.log
+*~
+
 #xcode specific
 XcodeDerived/*
 *.pbxuser
