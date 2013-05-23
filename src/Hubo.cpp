@@ -59,6 +59,16 @@ bool Hubo::rightArmAnalyticalIK(VectorXd& q, const Isometry3d& B, const VectorXd
     return armAnalyticalIK(q, B, qPrev, SIDE_RIGHT);
 }
 
+bool Hubo::leftLegAnalyticalIK(VectorXd& q, const Isometry3d& B, const VectorXd& qPrev)
+{
+    return legAnalyticalIK(q, B, qPrev, SIDE_LEFT);
+}
+
+bool Hubo::rightLegAnalyticalIK(VectorXd& q, const Isometry3d& B, const VectorXd& qPrev)
+{
+    return legAnalyticalIK(q, B, qPrev, SIDE_RIGHT);
+}
+
 
 //------------------------------------------------------------------------------
 // Hubo Private Member Functions
@@ -66,7 +76,7 @@ bool Hubo::rightArmAnalyticalIK(VectorXd& q, const Isometry3d& B, const VectorXd
 void Hubo::initialize()
 {
     // Lengths
-    torsoLength = 0.201256;
+    torsoLength = 0.1865;
     
     armLengths.resize(4, 1);
     armLengths <<
@@ -77,11 +87,11 @@ void Hubo::initialize()
     
     legLengths.resize(5, 1);
     legLengths <<
-        0.0885021,              // waist -> hip Y
-        0.1674730,              // waist -> hip Z
-        0.2800070,              // hip -> knee Z
-        0.2799420,              // knee -> ankle Z
-        0.105888;               // ankle to foot Z
+        0.0884,                 // waist -> hip Y
+        0.1825,                 // waist -> hip Z
+        0.3000,                 // hip -> knee Z
+        0.3000,                 // knee -> ankle Z
+        0.0950;                 // ankle to foot Z
     
     // Limits
     torsoLimits.resize(1, 2);
@@ -117,12 +127,12 @@ void Hubo::initialize()
     
     rightLegLimits.resize(6, 2);
     rightLegLimits <<
-    -M_PI/2,    M_PI/2,     // hip yaw
-    -0.488692,  0.488692,   // hip roll
-    -1.48353,   1.6057,     // hip pitch
-    -0.0698132, 2.60054,    // knee pitch
-    -1.29154,   1.69297,    // ankle pitch
-    -0.191986,  0.191986;   // ankle roll
+        -M_PI/2,    M_PI/2,     // hip yaw
+        -0.488692,  0.488692,   // hip roll
+        -1.48353,   1.6057,     // hip pitch
+        -0.0698132, 2.60054,    // knee pitch
+        -1.29154,   1.69297,    // ankle pitch
+        -0.191986,  0.191986;   // ankle roll
     
     // Offsets
     torsoOffset = 0.0;         // torso yaw
@@ -565,6 +575,20 @@ void Hubo::armFK(Isometry3d& B, const Vector6d& q, size_t side)
     linkage(index).values(q0);
 }
 
+void Hubo::legFK(Isometry3d& B, const Vector6d& q, size_t side)
+{
+    size_t index;
+    if (side == SIDE_RIGHT) {
+        index = linkageIndex("RIGHT_LEG");
+    } else {
+        index = linkageIndex("LEFT_LEG");
+    }
+    VectorXd q0 = linkage(index).values();
+    linkage(index).values(q);
+    B = linkage(index).tool().respectToLinkage();
+    linkage(index).values(q0);
+}
+
 bool Hubo::armAnalyticalIK(VectorXd& q, const Isometry3d& B, const Vector6d& qPrev, size_t side)
 {
     q.resize(6,1);
@@ -883,4 +907,209 @@ bool Hubo::armAnalyticalIK(VectorXd& q, const Isometry3d& B, const Vector6d& qPr
     return anyWithin;
 
 }
+
+
+bool Hubo::legAnalyticalIK(VectorXd& q, const Isometry3d& B, const Vector6d& qPrev, size_t side) {
+    Eigen::ArrayXXd qAll(6,8);
+    
+    // Declarations
+    Isometry3d neck, neckInv, waist, waistInv, BInv;
+    double nx, sx, ax, px;
+    double ny, sy, ay, py;
+    double nz, sz, az, pz;
+    double q1, q2, q3, q4, q5, q6;
+    double C45, psi, q345;
+    Eigen::Matrix<int, 8, 3> m;
+    
+    double S2, S4, S6;
+    double C2, C4, C5, C6;
+    
+    Eigen::MatrixXd limits(6,2);
+    Vector6d offsets; offsets.setZero();
+    
+    // Parameters
+    //    double l1 = (79.5+107)/1000.0;
+    double l2 = legLengths[0];
+    double l3 = legLengths[1];
+    double l4 = legLengths[2];
+    double l5 = legLengths[3];
+    double l6 = legLengths[4];
+    
+    if (side == SIDE_RIGHT) {
+        // Transformation from Waist frame to right hip yaw frame
+        waist(0,0) = 0; waist(0,1) = -1; waist(0,2) = 0; waist(0,3) =   0;
+        waist(1,0) = 1; waist(1,1) =  0; waist(1,2) = 0; waist(1,3) = -l2;
+        waist(2,0) = 0; waist(2,1) =  0; waist(2,2) = 1; waist(2,3) = -l3;
+        waist(3,0) = 0; waist(3,1) =  0; waist(3,2) = 0; waist(3,3) =   1;
+        
+        limits = rightLegLimits;
+        offsets = rightLegOffsets;
+        
+    } else {
+        // Transformation from Waist frame to left hip yaw frame
+        waist(0,0) = 0; waist(0,1) = -1; waist(0,2) = 0; waist(0,3) =   0;
+        waist(1,0) = 1; waist(1,1) =  0; waist(1,2) = 0; waist(1,3) =  l2;
+        waist(2,0) = 0; waist(2,1) =  0; waist(2,2) = 1; waist(2,3) = -l3;
+        waist(3,0) = 0; waist(3,1) =  0; waist(3,2) = 0; waist(3,3) =   1;
+
+        limits = leftLegLimits;
+        offsets = leftLegOffsets;
+        
+    }
+    waistInv = waist.inverse();
+    
+    // Variables
+    BInv = (waistInv*B).inverse();
+    
+    nx = BInv(0,0); sx = BInv(0,1); ax = BInv(0,2); px = BInv(0,3);
+    ny = BInv(1,0); sy = BInv(1,1); ay = BInv(1,2); py = BInv(1,3);
+    nz = BInv(2,0); sz = BInv(2,1); az = BInv(2,2); pz = BInv(2,3);
+    
+    m <<
+    1,  1,  1,
+    1,  1, -1,
+    1, -1,  1,
+    1, -1, -1,
+    -1,  1,  1,
+    -1,  1, -1,
+    -1, -1,  1,
+    -1, -1, -1;
+    
+    for (size_t i = 0; i < 8; i++)
+    {
+        C4 = ((l6 + px)*(l6 + px) - l4*l4 - l5*l5 + py*py + pz*pz)/(2*l4*l5);
+        complex<double> radical = 1-C4*C4;
+        q4 = atan2(m(i,0)*real(sqrt(radical)),C4);
+        
+        S4 = sin(q4);
+        psi = atan2(S4*l4, C4*l4+l5);
+        radical = ((px+l6)*(px+l6)+(py*py));
+        q5 = wrapToPi(atan2(-pz, m(i,1)*real(sqrt(radical)))-psi);
+        
+        q6 = atan2(py, -px-l6);
+        C45 = cos(q4+q5);
+        C5 = cos(q5);
+        if (C45*l4 + C5*l5 < 0)
+        {
+            q6 = wrapToPi(q6 + M_PI);
+        }
+        
+        S6 = sin(q6);
+        C6 = cos(q6);
+        
+        S2 = C6*ay + S6*ax;
+        radical = 1-S2*S2;
+        q2 = atan2(S2,m(i,2)*real(sqrt(radical)));
+        
+        q1 = atan2(C6*sy + S6*sx,C6*ny + S6*nx);
+        C2 = cos(q2);
+        if (C2 < 0) {
+            q1 = wrapToPi(q1 + M_PI);
+        }
+        
+        q345 = atan2(-az/C2,-(C6*ax - S6*ay)/C2);
+        q3 = wrapToPi(q345-q4-q5);
+        
+        qAll(0,i) = q1;
+        qAll(1,i) = q2;
+        qAll(2,i) = q3;
+        qAll(3,i) = q4;
+        qAll(4,i) = q5;
+        qAll(5,i) = q6;
+    }
+    
+    // Set to offset
+    for (size_t i = 0; i < 6; i++) {
+        if (side==SIDE_RIGHT) {
+            q(i) = wrapToPi(q(i) + offsets(i));
+        } else {
+            q(i) = wrapToPi(q(i) + offsets(i));
+        }
+    }
+    
+    // Find best solution
+    Eigen::ArrayXd qDiff(6,1); qDiff.setZero();
+    Eigen::ArrayXd qDiffSum(8,1);
+    bool withinLim[8];
+    size_t minInd;
+    
+    // if any joint solution is infintesimal, set it to zero
+    for(size_t i=0; i<8; i++)
+        for(size_t j=0; j<6; j++)
+            if(qAll(j,i) < zeroSize && qAll(j,i) > -zeroSize)
+                qAll(j,i) = 0.0;
+    
+    // Initialize withinLim to all trues for all eight solutions
+    for(size_t i=0; i<8; i++)
+        withinLim[i] = true;
+    
+    // Check each set of solutions to see if any are outside the limits
+    for(size_t i=0; i<8; i++)
+        for(size_t j=0; j<6; j++)
+            if( limits(j,0) > qAll(j,i) || qAll(j,i) > limits(j,1) )
+                withinLim[i] = false;
+    
+    // Initialze anyWithin boolean array to all trues
+    bool anyWithin=false;
+    for(size_t i=0; i<8; i++)
+        if( withinLim[i] )
+            anyWithin = true;
+    
+    // If any solution has all joints within the limits...
+    if(anyWithin)
+    {
+        // for each solution...
+        for (size_t i = 0; i < 8; i++)
+        {
+            // if all the joints of solution i are within the limits...
+            if( withinLim[i] )
+            {
+                // calculate the differences between solution angles, j, and previous angles
+                for (size_t j=0; j < 6; j++)
+                {
+                    qDiff(j) = wrapToPi(qAll(j,i) - qPrev(j));
+                }
+                // sum the absolute values of the differences to get total difference
+                qDiffSum(i) = qDiff.abs().sum();
+            }
+            // if the solution doesn't have all the joints within the limits...
+            else
+                // set the difference for that solution to infinity
+                qDiffSum(i) = std::numeric_limits<double>::infinity();
+        }
+        // and take the solution closest to previous solution
+        qDiffSum.minCoeff(&minInd);
+        q = qAll.col(minInd);
+    }
+    
+    // if no solution has all the joints within the limits...
+    else
+    {
+        // then for each solution...
+        for(size_t i=0; i<8; i++)
+        {
+            // create a 6d vector of angles of solution i
+            Vector6d qtemp = qAll.col(i).matrix();
+            // take the min of the angles and the joint upper limits
+            qtemp = qtemp.cwiseMin(limits.col(1));
+            // then take the max of those angles and the joint lower limits
+            qtemp = qtemp.cwiseMax(limits.col(0));
+            // create an Isometry3d 4x4 matrix for the temp pose
+            Isometry3d Btemp;
+            // find the pose associated with the temp angles
+            legFK( Btemp, qtemp, side );
+            // calculate the distance from previous pose to temp pose locations
+            qDiffSum(i) = (Btemp.translation() - B.translation()).norm();
+        }
+        // find the solution that's closest the previous position
+        qDiffSum.minCoeff(&minInd);
+        q = qAll.col(minInd);
+    }
+    // set the final joint angles to the solution closest to the previous solution
+    for( size_t i=0; i<6; i++)
+        q(i) = max( min( q(i), limits(i,1)), limits(i,0) );
+    
+    return anyWithin;
+}
+
 

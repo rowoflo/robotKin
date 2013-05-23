@@ -110,6 +110,12 @@ public:
     bool armAnalyticalIK(VectorXd& q, const Isometry3d& B, const Vector6d& qPrev, size_t side);
     
     
+    bool leftLegAnalyticalIK(VectorXd& q, const Isometry3d& B, const VectorXd& qPrev);
+    bool rightLegAnalyticalIK(VectorXd& q, const Isometry3d& B, const VectorXd& qPrev);
+    
+    void legFK(Isometry3d& B, const Vector6d& q, size_t side);
+    bool legAnalyticalIK(VectorXd& q, const Isometry3d& B, const Vector6d& qPrev, size_t side);
+    
     //--------------------------------------------------------------------------
     // Hubo Public Member Variables
     //--------------------------------------------------------------------------

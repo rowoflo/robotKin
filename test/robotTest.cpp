@@ -273,12 +273,39 @@ void tutorial()
     cout << q1 << endl << endl;
     
     
+    Linkage* rightLeg = &hubo.linkage("RIGHT_LEG");
+    cout << "Let's now show the IK for the " << rightLeg->name() << ". Let's set the joint values to the following:" << endl;
+
+    q0 <<
+     .11,
+     .22,
+     .13,
+     .24,
+     .15,
+     .16;
+    
+    rightLeg->values(q0);
+    
+    cout << rightLeg->values() << endl << endl;
+    
+    cout << "Then the " << rightLeg->tool().name() << " with respect to the linkage has a pose of " << endl;
+    
+    B0 = rightLeg->tool().respectToLinkage();
+    
+    cout << B0.matrix() << endl << endl;
+    
+    cout << "This HG transformation can be given to the IK to get the following joint values:" << endl;
+    
+    hubo.rightLegAnalyticalIK(q1, B0, q0);
+    
+    cout << q1 << endl << endl;
+    
+    
     cout << "------------------" << endl;
     cout << "|  Still to come |" << endl;
     cout << "------------------" << endl << endl;
     
     cout << "Things that still need to be added or fixed are the following:" << endl;
-    cout << "-- Analytical Leg Inverse Kinematics" << endl;
     cout << "-- Numerical Inverse Kinematics" << endl;
     cout << "-- Documentation has to be written" << endl;
     cout << "-- Possibly fix how joints and linkages are stored so everything is reference by a pointer" << endl;
