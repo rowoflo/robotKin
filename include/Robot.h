@@ -76,6 +76,17 @@ namespace golems {
     // Typedefs
     //------------------------------------------------------------------------------
     typedef Matrix<double, 6, Dynamic> Matrix6Xd;
+
+	// Sort parentIndices and linkages
+    struct indexParentIndexPair {
+        size_t I;
+        int pI;
+    
+        bool operator<( const indexParentIndexPair& rhs ) const {
+            return pI < rhs.pI;
+        }
+    };
+
     
     
     class Robot : public Frame

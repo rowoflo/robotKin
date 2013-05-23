@@ -195,16 +195,6 @@ void Robot::initialize(vector<Linkage> linkages, vector<int> parentIndices)
     
     assert(linkages.size() == parentIndices.size());
     
-    // Sort parentIndices and linkages
-    struct indexParentIndexPair {
-        size_t I;
-        int pI;
-        
-        bool operator<( const indexParentIndexPair& rhs ) const {
-            return pI < rhs.pI;
-        }
-    };
-    
     vector<indexParentIndexPair> iPI(linkages.size());
     for (size_t i = 0; i != linkages.size(); ++i) {
         iPI[i].I = i;
