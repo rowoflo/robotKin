@@ -23,7 +23,8 @@
 //------------------------------------------------------------------------------
 using namespace std;
 using namespace Eigen;
-using namespace golems;
+using namespace RobotKin;
+using namespace Golems;
 
 
 //------------------------------------------------------------------------------

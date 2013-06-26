@@ -68,7 +68,8 @@ using namespace std;
 using namespace Eigen;
 
 
-namespace golems {
+namespace RobotKin
+{
     
     
     //------------------------------------------------------------------------------
@@ -142,7 +143,7 @@ namespace golems {
         
     }; // clase Frame
     
-} // namespace golems
+} // namespace RobotKin
 
 #endif
 

@@ -21,7 +21,7 @@
 //------------------------------------------------------------------------------
 // Namespaces
 //------------------------------------------------------------------------------
-using namespace golems;
+using namespace RobotKin;
 
 
 //------------------------------------------------------------------------------
@@ -33,7 +33,9 @@ Linkage::Joint::Joint(Isometry3d respectToFixed,
                       size_t id,
                       JointType jointType,
                       double minValue,
-                      double maxValue)
+                      double maxValue,
+                      double minVel,
+                      double maxVel)
 :
 Frame::Frame(respectToFixed, name, id, JOINT),
 respectToFixedTransformed_(respectToFixed),
@@ -41,7 +43,10 @@ respectToLinkage_(respectToFixed),
 jointType_(jointType),
 min_(minValue),
 max_(maxValue),
+minVel_(minVel),
+maxVel_(maxVel),
 value_(0),
+vel_(0),
 linkage_(0),
 robot_(0)
 {
@@ -73,6 +78,36 @@ void Linkage::Joint::value(double value)
     }
     if (linkage_ != 0 )
         linkage_->updateFrames();
+}
+
+double Linkage::Joint::vel() const { return vel_; }
+void Linkage::Joint::vel(double vel)
+{
+  vel_ = vel;
+}
+
+double Linkage::Joint::max() const { return max_; }
+void Linkage::Joint::max(double max)
+{
+  max_ = max;
+}
+
+double Linkage::Joint::min() const { return min_; }
+void Linkage::Joint::min(double min)
+{
+  min_ = min;
+}
+
+double Linkage::Joint::maxVel() const { return maxVel_; }
+void Linkage::Joint::maxVel(double maxVel)
+{
+  maxVel_ = maxVel;
+}
+
+double Linkage::Joint::minVel() const { return minVel_; }
+void Linkage::Joint::minVel(double minVel)
+{
+  minVel_ = minVel;
 }
 
 
@@ -299,6 +334,41 @@ void Linkage::values(const VectorXd& someValues) {
         joints_[i].value(someValues(i));
     }
     updateFrames();
+}
+
+VectorXd Linkage::vels() const
+{
+    VectorXd theVels(nJoints(),1);
+    for (size_t i = 0; i < nJoints(); ++i) {
+        theVels[i] = joints_[i].vel();
+    }
+    return theVels;
+}
+
+void Linkage::vels(const VectorXd& someVels) {
+    assert(someVels.size() == nJoints());    
+    for (size_t i = 0; i < nJoints(); ++i) {
+        joints_[i].vel(someVels(i));
+    }
+    updateFrames();
+}
+
+VectorXd Linkage::minVels() const
+{
+    VectorXd theMinVels(nJoints(),1);
+    for (size_t i = 0; i < nJoints(); ++i) {
+        theMinVels[i] = joints_[i].minVel();
+    }
+    return theMinVels;
+}
+
+VectorXd Linkage::maxVels() const
+{
+    VectorXd theMaxVels(nJoints(),1);
+    for (size_t i = 0; i < nJoints(); ++i) {
+        theMaxVels[i] = joints_[i].maxVel();
+    }
+    return theMaxVels;
 }
 
 const Isometry3d& Linkage::respectToFixed() const { return respectToFixed_; };

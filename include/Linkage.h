@@ -56,6 +56,7 @@
 // Includes
 //------------------------------------------------------------------------------
 #include "Frame.h"
+#include <math.h>
 #include <string>
 #include <vector>
 #include <map>
@@ -65,7 +66,7 @@
 //------------------------------------------------------------------------------
 // Class Declarations
 //------------------------------------------------------------------------------
-namespace golems
+namespace RobotKin
 {
     class Robot;
 }
@@ -76,13 +77,14 @@ namespace golems
 using namespace std;
 using namespace Eigen;
 
-namespace golems {
+namespace RobotKin
+{
     
     
     //------------------------------------------------------------------------------
     // Typedefs and Enums
     //------------------------------------------------------------------------------
-    typedef Matrix<double, 6, Dynamic> Matrix6Xd;
+    typedef Eigen::Matrix<double, 6, Dynamic> Matrix6Xd;
     
     enum JointType {
         REVOLUTE,
@@ -123,7 +125,9 @@ namespace golems {
                   size_t id = 0,
                   JointType jointType = REVOLUTE,
                   double minValue = -M_PI,
-                  double maxValue = M_PI);
+                  double maxValue = M_PI,
+                  double minVel = -INFINITY,
+                  double maxVel = INFINITY);
             
             // Destructor
             virtual ~Joint();
@@ -139,6 +143,21 @@ namespace golems {
             //----------------------------------------------------------------------
             double value() const;
             void value(double value);
+
+            double vel() const;
+            void vel(double vel);            
+
+            double max() const;
+            void max(double max);
+
+            double min() const;
+            void min(double min);
+
+            double maxVel() const;
+            void maxVel(double maxVel);
+
+            double minVel() const;
+            void minVel(double minVel);
             
             const Isometry3d& respectToFixed() const;
             void respectToFixed(Isometry3d aCoordinate);
@@ -160,6 +179,7 @@ namespace golems {
             // Joint Protected Member Variables
             //----------------------------------------------------------------------
             double value_; // Current joint value (R type = joint angle, P type = joint length)
+            double vel_; // Current joint velocity
             
         private:
             //----------------------------------------------------------------------
@@ -168,6 +188,9 @@ namespace golems {
             JointType jointType_; // Type of joint (REVOLUTE or PRISMATIC)
             double min_; // Minimum joint value
             double max_; // Maximum joint value
+            double minVel_; // Minimum joint velocity
+            double maxVel_; // Maximum joint velocity
+
             Isometry3d respectToFixedTransformed_; // Coordinates transformed according to the joint value and type with respect to respectToFixed frame
             Isometry3d respectToLinkage_; // Coordinates with respect to linkage base frame
             Linkage* linkage_;
@@ -281,6 +304,12 @@ namespace golems {
         
         VectorXd values() const;
         void values(const VectorXd &someValues);
+
+        VectorXd vels() const;
+        void vels(const VectorXd &someVels);
+
+        VectorXd maxVels() const;
+        VectorXd minVels() const;
         
         const Isometry3d& respectToFixed() const;
         void respectToFixed(Isometry3d aCoordinate);
@@ -331,7 +360,7 @@ namespace golems {
     }; // class Linkage
 
     
-} // namespace golems
+} // namespace RobotKin
 
 #endif
 

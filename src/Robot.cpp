@@ -19,7 +19,7 @@
 //------------------------------------------------------------------------------
 // Namespaces
 //------------------------------------------------------------------------------
-using namespace golems;
+using namespace RobotKin;
 
 
 //------------------------------------------------------------------------------
@@ -30,7 +30,9 @@ Robot::Robot()
 :
 Frame::Frame(Isometry3d::Identity()),
 respectToWorld_(Isometry3d::Identity()),
-initializing_(false)
+initializing_(false),
+position_(Vector3d::Zero()),
+orientation_(Isometry3d::Identity())
 {
     frameType_ = ROBOT;
 }
@@ -119,10 +121,12 @@ void Robot::values(const VectorXd& someValues) {
 }
 
 
-const Isometry3d& Robot::respectToFixed() const { return respectToFixed_; };
+const Isometry3d& Robot::respectToFixed() const { return respectToFixed_; }
 void Robot::respectToFixed(Isometry3d aCoordinate)
 {
     respectToFixed_ = aCoordinate;
+    position_ = respectToFixed_.translation();
+    orientation_ = respectToFixed_.rotation();
     updateFrames();
 }
 
@@ -130,6 +134,44 @@ Isometry3d Robot::respectToWorld() const
 {
     return respectToWorld_;
 }
+
+
+const Vector3d& Robot::position() const
+{
+    return position_;
+}
+
+void Robot::position(Vector3d aPosition)
+{
+    Isometry3d aCoordinate;
+    Matrix<double, 4, 4> T;
+    T << 
+        orientation_(0,0), orientation_(1,0), orientation_(2,0),  aPosition(0),
+        orientation_(0,1), orientation_(1,1), orientation_(2,1),  aPosition(1),
+        orientation_(0,2), orientation_(1,2), orientation_(2,2),  aPosition(2),
+        0.0,  0.0,  0.0,  1.0;
+    aCoordinate = T;
+    respectToFixed(aCoordinate);
+}
+
+const Isometry3d& Robot::orientation() const
+{
+    return orientation_;
+}
+
+void Robot::orientation(Isometry3d anOrientation)
+{
+    Isometry3d aCoordinate;
+    Matrix<double, 4, 4> T;
+    T << 
+        anOrientation(0,0), anOrientation(1,0), anOrientation(2,0),  position_(0),
+        anOrientation(0,1), anOrientation(1,1), anOrientation(2,1),  position_(1),
+        anOrientation(0,2), anOrientation(1,2), anOrientation(2,2),  position_(2),
+        0.0,  0.0,  0.0,  1.0;
+    aCoordinate = T;
+    respectToFixed(aCoordinate);
+}
+
 
 void Robot::jacobian(MatrixXd& J, const vector<Linkage::Joint>& jointFrames, Vector3d location, const Frame* refFrame) const
 { // location should be specified in respect to robot coordinates
@@ -165,6 +207,9 @@ void Robot::jacobian(MatrixXd& J, const vector<Linkage::Joint>& jointFrames, Vec
 void Robot::printInfo() const
 {
     Frame::printInfo();
+
+    cout << "Position: \n" << position() << endl << endl;
+    cout << "Orientation:\n" << orientation().matrix() << endl << endl;
     
     cout << "Linkages (ID, Name <- Parent): " << endl;
     for (vector<Linkage>::const_iterator linkageIt = const_linkages().begin();
@@ -245,6 +290,7 @@ void Robot::initialize(vector<Linkage> linkages, vector<int> parentIndices)
 //------------------------------------------------------------------------------
 void Robot::updateFrames()
 {
+    respectToWorld_ = respectToFixed_;
     if (~initializing_) {
         for (vector<Linkage>::iterator linkageIt = linkages_.begin();
              linkageIt != linkages_.end(); ++linkageIt) {

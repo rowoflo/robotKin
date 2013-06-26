@@ -28,7 +28,8 @@
 //------------------------------------------------------------------------------
 using namespace std;
 using namespace Eigen;
-using namespace golems;
+using namespace RobotKin;
+using namespace Golems;
 
 //------------------------------------------------------------------------------
 // Global Varible Declarations
@@ -119,7 +120,7 @@ void tutorial()
     cout << "Set the joints individually." << endl;
     
     Linkage::Joint* joint0 = &rightArm->joint(0); // Again notice that this is a pointer
-    Linkage::Joint joint1 = rightArm->joint(1); // This is not a pointer but return a const reference, but updating this joint will not update the robot
+    Linkage::Joint joint1 = rightArm->joint(1); // This is not a pointer but returns a const reference, but updating this joint will not update the robot
     Linkage::Joint* joint2 = &rightArm->joint("RSY"); // Just like linkages, joints can be index by name
     
     joint0->value(0.1);

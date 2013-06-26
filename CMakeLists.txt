@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.6)
-project(robotKin)
+project(RobotKin)
 
 include_directories(include)
 
@@ -13,7 +13,7 @@ LIST(SORT lib_source)
 file(GLOB unit_tests_source "test/*.cpp")
 LIST(SORT unit_tests_source)
 
-add_library(${PROJECT_NAME} SHARED ${lib_source})
+add_library(${PROJECT_NAME} STATIC ${lib_source})
 
 enable_testing()
 

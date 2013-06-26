@@ -69,13 +69,14 @@
 using namespace std;
 using namespace Eigen;
 
-namespace golems {
+namespace RobotKin
+{
     
     
     //------------------------------------------------------------------------------
     // Typedefs
     //------------------------------------------------------------------------------
-    typedef Matrix<double, 6, Dynamic> Matrix6Xd;
+    typedef Eigen::Matrix<double, 6, Dynamic> Matrix6Xd;
 
 	// Sort parentIndices and linkages
     struct indexParentIndexPair {
@@ -145,8 +146,14 @@ namespace golems {
         void respectToFixed(Isometry3d aCoordinate);
         
         Isometry3d respectToWorld() const;
+
+        const Vector3d& position() const;
+        void position(Vector3d aPosition);
+
+        const Isometry3d& orientation() const;
+        void orientation(Isometry3d anOrientation);
         
-        void jacobian(MatrixXd& J, const vector<Linkage::Joint>& jointFrames, Vector3d location, const Frame* refFrame) const;
+        void jacobian(MatrixXd& J, const vector<Linkage::Joint>& jointFrames, Vector3d position, const Frame* refFrame) const;
         
         void printInfo() const;
         
@@ -181,6 +188,8 @@ namespace golems {
         // Robot Private Member Variables
         //--------------------------------------------------------------------------
         bool initializing_;
+        Vector3d position_;
+        Isometry3d orientation_;
         
         
         
@@ -190,7 +199,7 @@ namespace golems {
     // Postfix Increment Operators
     //------------------------------------------------------------------------------
     
-} // namespace golems
+} // namespace RobotKin
 
 #endif
 
